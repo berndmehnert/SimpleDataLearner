@@ -1,0 +1,7 @@
+name = "SimpleDataLearner"
+uuid = "9b5c4c24-6a1d-4fca-b7c0-ddc0bd6dbc37"
+authors = ["bernd <bernd.mehnert@artengis.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
