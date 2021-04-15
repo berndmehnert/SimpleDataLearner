@@ -1,6 +1,7 @@
 module SimpleDataLearner
 import Base.map
 using LinearAlgebra
+
 mutable struct AffineApproximation
     W; b
 end
