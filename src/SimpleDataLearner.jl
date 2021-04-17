@@ -20,12 +20,12 @@ end
 
 map(model :: AffineModel, X) = model.W * X + model.b
 
-function Loss(model :: AffineModel, t :: TrainingExample) 
+function Loss(model :: Model, t :: TrainingExample) 
     α = map(model, t.X) - t.Y
     return α^2
 end 
 
-function learn!(f :: AffineApproximation, data :: Array{Datum})
+function learn!(model :: Model, loss, data :: Array{TrainingExample})
 end
 
 end # module
