@@ -29,6 +29,10 @@ function gradientStep!(model :: AffineModel, o :: Observation, η :: Float64) ::
 end
 
 function fit!(model :: Model, observations :: Array{Observation})
+    η = 0.01
+    for o in observations
+        gradientStep!(model, o, η)
+    end
 end
 
 end # module
