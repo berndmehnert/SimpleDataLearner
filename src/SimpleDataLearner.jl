@@ -14,18 +14,18 @@ mutable struct AffineModel <: Model
     W; b
 end
 
-struct TrainingExample
+struct Observation
     X; Y
 end
 
 map(model :: AffineModel, X) = model.W * X + model.b
 
-function Loss(model :: Model, t :: TrainingExample) 
-    α = map(model, t.X) - t.Y
-    return α^2
+function Loss(model :: Model, o :: Observation) 
+    α = map(model, o.X) - o.Y
+    return dot(α, α)
 end 
 
-function learn!(model :: Model, loss, data :: Array{TrainingExample})
+function learn!(model :: Model, loss, data :: Array{Observation})
 end
 
 end # module
