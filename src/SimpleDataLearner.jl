@@ -20,7 +20,7 @@ end
 
 map(model :: AffineModel, X) = model.W * X + model.b
 
-function Loss(model :: Model, o :: Observation) 
+function QuadraticLoss(model :: Model, o :: Observation) 
     α = map(model, o.X) - o.Y
     return dot(α, α)
 end 
@@ -28,4 +28,4 @@ end
 function learn!(model :: Model, loss, data :: Array{Observation})
 end
 
-end # module
+end # moduleIsrael Keyes
