@@ -3,10 +3,8 @@ module SimpleDataLearner
 import Base.map
 using LinearAlgebra
 using ForwardDiff
-
-""" 
-Basic differential operators we need:
-"""
+ 
+# Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
 
 abstract type Model end
@@ -20,12 +18,18 @@ end
 
 map(model :: AffineModel, X) = model.W * X + model.b
 
-function QuadraticLoss(model :: Model, o :: Observation) 
+function quadraticLoss(model :: Model, o :: Observation) 
     α = map(model, o.X) - o.Y
     return dot(α, α)
-end 
+end
+
+function gradientStep!(model :: AffineModel, o :: Observation, η :: Float64) :: AffineModel
+    α = quadraticLoss(model, o)
+    model.W = model.W - 2*η*o.X*α
+    model.b = model.b - 2*η*α
+end
 
 function learn!(model :: Model, loss, data :: Array{Observation})
 end
 
-end # moduleIsrael Keyes
+end # module
