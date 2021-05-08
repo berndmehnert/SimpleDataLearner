@@ -8,9 +8,15 @@ import Base.map
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
 
-abstract type Model end
-mutable struct AffineModel <: Model
+abstract type AbstractModel end
+mutable struct AffineModel <: AbstractModel
     W; b
+end
+
+struct RELU <: AbstractModel end
+struct Softmax <: AbstractModel end
+struct Model <: AbstractModel
+    components :: Vector{AbstractModel}
 end
 
 struct Observation
@@ -18,6 +24,8 @@ struct Observation
 end
 
 map(model :: AffineModel, X) = model.W * X + model.b
+map(model :: RELU, X) = (x -> max(x,0)).(X)
+map(model :: Softmax, X) = x -> exp.(X)/sum(exp.(X))
 
 """
 For the moment, perform a gradient step with respect to the quadratic loss. We generalize later.
