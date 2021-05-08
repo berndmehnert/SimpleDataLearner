@@ -8,24 +8,31 @@ import Base.map
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
 
-abstract type AbstractModel end
-mutable struct AffineModel <: AbstractModel
+abstract type AbstractTransformation end
+mutable struct AffineTransformation <: AbstractTransformation
     W; b
 end
 
-struct RELU <: AbstractModel end
-struct Softmax <: AbstractModel end
-struct Model <: AbstractModel
-    components :: Vector{AbstractModel}
+@enum ActivationFunction begin
+    RELU
+    Softmax
 end
 
-struct Observation
-    X; Y
+ModelComponent = Union{AbstractTransformation, ActivationFunction}
+struct Model 
+    components :: Vector{ModelComponent}
 end
 
-map(model :: AffineModel, X) = model.W * X + model.b
-map(model :: RELU, X) = (x -> max(x,0)).(X)
-map(model :: Softmax, X) = x -> exp.(X)/sum(exp.(X))
+map(transformation :: AffineTransformation, X) = transformation.W * X + transformation.b
+function get(activationFunction :: ActivationFunction)
+    if activationFunction == RELU 
+        return X -> max.(X,0)
+    elseif activationFunction == Softmax
+        return X -> exp.(X)/sum(exp.(X))
+    else 
+        error("Activation function not available ..")
+    end
+end
 
 """
 For the moment, perform a gradient step with respect to the quadratic loss. We generalize later.
