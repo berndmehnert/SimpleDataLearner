@@ -2,8 +2,6 @@ module SimpleDataLearner
 
 using LinearAlgebra
 using ForwardDiff
-
-import Base.map
  
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
@@ -27,7 +25,7 @@ struct Model <: AbstractModel
     components :: Vector{ModelComponent}
 end
 
-map(transformation :: AffineTransformation, X :: Matrix{Float64}) = transformation.W * X + transformation.b
+apply(transformation :: AffineTransformation, X :: Matrix{Float64}) = transformation.W * X + transformation.b
 
 function getActivationFunction(activationFunction :: ActivationFunction)
     if activationFunction == RELU 
