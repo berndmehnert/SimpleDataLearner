@@ -8,10 +8,11 @@ using ForwardDiff
 
 abstract type AbstractModel end
 abstract type AbstractTransformation end
-
 mutable struct AffineTransformation <: AbstractTransformation
     W :: Matrix{Float64}
     b :: Matrix{Float64}
+end
+mutable struct Convolution <: AbstractTransformation
 end
 
 @enum ActivationFunction begin
