@@ -2,6 +2,8 @@ module SimpleDataLearner
 
 using LinearAlgebra
 using ForwardDiff
+
+export AffineTransformation, ActivationFunction
  
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
@@ -16,7 +18,8 @@ mutable struct Convolution <: AbstractTransformation
 end
 
 @enum ActivationFunction begin
-    RELU
+    RELU 
+    GELU 
     Softmax
 end
 
@@ -26,7 +29,19 @@ struct Model <: AbstractModel
     components :: Vector{ModelComponent}
 end
 
-apply(transformation :: AffineTransformation, X :: Matrix{Float64}) = transformation.W * X + transformation.b
+# Compute derivatives of transformations and activation functions
+D(transformation :: AffineTransformation, X) = transformation.W 
+function D(activationFunction :: ActivationFunction, X)
+    if activationFunction == RELU 
+        return (x -> x > 0).(X)
+    elseif activationFunction == Softmax
+        return exp.(X)/sum(exp.(X))
+    else 
+        error("Activation function not available ..")
+    end
+end
+
+apply(transformation :: AffineTransformation, X) = transformation.W * X + transformation.b
 
 function getActivationFunction(activationFunction :: ActivationFunction)
     if activationFunction == RELU 
