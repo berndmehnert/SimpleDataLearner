@@ -56,4 +56,15 @@ end
 
 map(activationFunction :: ActivationFunction, v) = getActivationFunction(activationFunction)(v)
 
+map(model :: Model, v) = begin
+    if length(model.components) > 1
+        model1 = Model(model.components[1:end-1])
+        w = map(model1, v)
+        return map(model.components[end], w)
+    else if length(model.components) == 1
+        return map(model.components[1], v)
+    else
+        return nothing        
+end
+
 end # module
