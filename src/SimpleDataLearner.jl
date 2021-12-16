@@ -2,6 +2,7 @@ module SimpleDataLearner
 
 using LinearAlgebra
 using ForwardDiff
+import Base.map
 
 export AffineTransformation, ActivationFunction
  
@@ -12,7 +13,7 @@ abstract type AbstractModel end
 abstract type AbstractTransformation end
 mutable struct AffineTransformation <: AbstractTransformation
     W :: Matrix{Float64}
-    b :: Matrix{Float64}
+    b :: Vector{Float64}
 end
 mutable struct Convolution <: AbstractTransformation
 end
@@ -41,16 +42,18 @@ function D(activationFunction :: ActivationFunction, X)
     end
 end
 
-apply(transformation :: AffineTransformation, X) = transformation.W * X + transformation.b
+map(transformation :: AffineTransformation, v) = transformation.W * v + transformation.b
 
-function getActivationFunction(activationFunction :: ActivationFunction)
+function getActivationFunction(activationFunction :: ActivationFunction) :: Function
     if activationFunction == RELU 
-        return X -> max.(X,0)
+        return v -> max.(v,0)
     elseif activationFunction == Softmax
-        return X -> exp.(X)/sum(exp.(X))
+        return v -> exp.(v)/sum(exp.(v))
     else 
         error("Activation function not available ..")
     end
 end
+
+map(activationFunction :: ActivationFunction, v) = getActivationFunction(activationFunction)(v)
 
 end # module
