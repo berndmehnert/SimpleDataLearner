@@ -2,12 +2,12 @@ module SimpleDataLearner
 
 using LinearAlgebra
 using ForwardDiff
-import Base.map
 
-export AffineTransformation, ActivationFunction
+export Dense, ∇, Softmax, RELU, Model, Jac
  
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
+Jac(f, x) = ForwardDiff.jacobian(f, x)
 
 abstract type AbstractModel end
 abstract type AbstractTransformation end
@@ -15,6 +15,9 @@ mutable struct AffineTransformation <: AbstractTransformation
     W :: Matrix{Float64}
     b :: Vector{Float64}
 end
+
+Dense(n, m) = AffineTransformation(rand(m, n), rand(m))
+
 mutable struct Convolution <: AbstractTransformation
 end
 
@@ -30,19 +33,7 @@ struct Model <: AbstractModel
     components :: Vector{ModelComponent}
 end
 
-# Compute derivatives of transformations and activation functions
-D(transformation :: AffineTransformation, X) = transformation.W 
-function D(activationFunction :: ActivationFunction, X)
-    if activationFunction == RELU 
-        return (x -> x > 0).(X)
-    elseif activationFunction == Softmax
-        return exp.(X)/sum(exp.(X))
-    else 
-        error("Activation function not available ..")
-    end
-end
-
-map(transformation :: AffineTransformation, v) = transformation.W * v + transformation.b
+apply(transformation :: AffineTransformation, v) = transformation.W * v + transformation.b
 
 function getActivationFunction(activationFunction :: ActivationFunction) :: Function
     if activationFunction == RELU 
@@ -54,17 +45,18 @@ function getActivationFunction(activationFunction :: ActivationFunction) :: Func
     end
 end
 
-map(activationFunction :: ActivationFunction, v) = getActivationFunction(activationFunction)(v)
+apply(activationFunction :: ActivationFunction, v) = getActivationFunction(activationFunction)(v)
 
-map(model :: Model, v) = begin
+apply(model :: Model, v) = begin
     if length(model.components) > 1
         model1 = Model(model.components[1:end-1])
-        w = map(model1, v)
-        return map(model.components[end], w)
-    else if length(model.components) == 1
-        return map(model.components[1], v)
+        w = apply(model1, v)
+        return apply(model.components[end], w)
+    elseif length(model.components) == 1
+        return apply(model.components[1], v)
     else
-        return nothing        
+        return nothing 
+    end       
 end
 
 end # module
