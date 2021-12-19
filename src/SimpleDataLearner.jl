@@ -3,7 +3,7 @@ module SimpleDataLearner
 using LinearAlgebra
 using ForwardDiff
 
-export Dense, ∇, Softmax, RELU, Model, Jac
+export Dense, ∇, Softmax, RELU, Model, Jac, params
  
 # Basic differential operators we need:
 ∇(f, x) = ForwardDiff.gradient(f, x)
@@ -21,7 +21,7 @@ Dense(n, m) = AffineTransformation(rand(m, n), rand(m))
 mutable struct Convolution <: AbstractTransformation
 end
 
-@enum ActivationFunction begin
+@enum ActivationFunction begin  
     RELU 
     GELU 
     Softmax
@@ -59,4 +59,15 @@ apply(model :: Model, v) = begin
     end       
 end
 
+params(affineTransformation :: AffineTransformation) = [affineTransformation.b, affineTransformation.W]
+params(activationFunction :: ActivationFunction) = []
+params(model :: Model) = begin
+    result = []
+    if length(model.components) > 0
+        for component in model.components
+            append!(result, params(component))
+        end
+    end
+    return result
+end
 end # module
