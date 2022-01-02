@@ -1,13 +1,13 @@
 module SimpleDataLearner
 
 using LinearAlgebra
-using ForwardDiff
+using Zygote
 
 export Dense, ∇, Softmax, RELU, Model, Jac, params
  
 # Basic differential operators we need:
-∇(f, x) = ForwardDiff.gradient(f, x)
-Jac(f, x) = ForwardDiff.jacobian(f, x)
+∇(f, x) = Zygote.gradient(f, x)
+Jac(f, x) = Zygote.jacobian(f, x)
 
 abstract type AbstractModel end
 abstract type AbstractTransformation end
@@ -67,6 +67,7 @@ params(model :: Model) = begin
         for component in model.components
             append!(result, params(component))
         end
+        
     end
     return result
 end
