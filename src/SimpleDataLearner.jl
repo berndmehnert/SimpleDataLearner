@@ -67,7 +67,6 @@ params(model :: Model) = begin
         for component in model.components
             append!(result, params(component))
         end
-        
     end
     return result
 end
